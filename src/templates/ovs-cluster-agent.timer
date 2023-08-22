@@ -1,0 +1,10 @@
+[Unit]
+Description=ovs-cluster-agent timer
+After=network.target
+
+[Timer]
+OnUnitActiveSec={{ stat_interval }}
+Persistent=True
+
+[Install]
+WantedBy=timers.target

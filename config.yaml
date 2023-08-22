@@ -1,0 +1,97 @@
+options:
+  # Used by systemd to specify the frequency of the agent execution
+  stat-interval:
+    type: int
+    default: 60
+    description: |
+      Interval (in seconds) at which the agent process will run.
+
+  # Resource URLs
+  base-api-url:
+    type: string
+    default:
+    description: |
+      The cluster-api url.
+  base-slurmrestd-url:
+    type: string
+    default: http://127.0.0.1:6820
+    description: |
+      The url for the Slurm REST API.
+  slurm-restd-version:
+    type: string
+    default: v0.0.36
+    description: |
+      The target version for the Slurm REST API.
+
+  # Slurmrestd authentication
+  slurmrestd-jwt-key-path:
+    type: string
+    default:
+    description: |
+      Path to the Slurmrestd JWT secret key
+  slurmrestd-jwt-key-string:
+    type: string
+    default:
+    description: |
+      Slurmrestd's JWT secret key itself
+  slurmrestd-use-key-path:
+    type: boolean
+    default: true
+    description: |
+      Whether to use the JWT secret key path or the JWT secret key string
+
+  # Auth related settings
+  oidc-domain:
+    type: string
+    default:
+    description: |
+      OIDC provider domain
+  oidc-audience:
+    type: string
+    default:
+    description: |
+      OIDC provider audience
+  oidc-client-id:
+    type: string
+    default:
+    description: |
+      Client ID used to issue JWTs
+  oidc-client-secret:
+    type: string
+    default:
+    description: |
+      Secret to protect OIDC client resources
+  slurm-user-mapper:
+    type: string
+    default: LDAP
+    description: |
+      Type of user-mapper to use. May be LDAP or SINGLE_USER
+  ldap-domain:
+    type: string
+    description: |
+      Domain for the LDAP host used for user identity on the server
+  ldap-username:
+    type: string
+    description: |
+      The username of the user that has directory-wide read permissions (or admin)
+  ldap-password:
+    type: string
+    description: |
+      The password for the user that has directory-wide read permissions (or admin)
+  ldap-auth-type:
+    type: string
+    default: NTLM
+    description: |
+      The type of auth to use for ldap connection. (Should usually be NTLM)
+
+  # Other settings
+  sentry-dsn:
+    type: string
+    default:
+    description: |
+      The client url for sending error events to sentry
+  x-slurm-user-name:
+    type: string
+    default: slurm
+    description: |
+      The default username to use for requests to the Slurm REST API
