@@ -1,7 +1,7 @@
 # TARGETS
 charm: clean version ## Build the charm
 	@charmcraft pack
-	@mv cluster-agent_*.charm cluster-agent.charm
+	@mv jobbergate-agent_*.charm jobbergate-agent.charm
 
 lint: ## Run linter
 	tox -e lint

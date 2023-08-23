@@ -1,4 +1,4 @@
-# charm-cluster-agent
+# charm-jobbergate-agent
 
 # Usage
 
@@ -6,18 +6,18 @@ Follow the steps below to get started.
 
 ### Build the charm
 
-Running the following command will produce a .charm file, `cluster-agent.charm`
+Running the following command will produce a .charm file, `jobbergate-agent.charm`
 
 ```bash
 charmcraft build
 ```
 
-### Create the cluster-agent charm config
+### Create the jobbergate-agent charm config
 
-`cluster-agent.yaml`
+`jobbergate-agent.yaml`
 
 ```yaml
-cluster-agent:
+jobbergate-agent:
   api-key: "<backend api-key>"
   backend-url: "<backend-url>"
   aws-access-key-i: "<aws-access-key-i>"
@@ -27,7 +27,7 @@ cluster-agent:
 e.g.
 
 ```yaml
-cluster-agent:
+jobbergate-agent:
   backend-url: https://armada-k8s-staging.omnivector.solutions
   api-key: GJGXBnzhyt8zKiVV5s9sW9pONOBa4sTW2VUd0VPK
   aws-access-key-id: ABCDEFGHIJKLMN
@@ -39,14 +39,14 @@ cluster-agent:
 Using the built charm and the defined config, run the command to deploy the charm.
 
 ```bash
-juju deploy ./cluster-agent.charm \
-    --config ./cluster-agent.yaml \
+juju deploy ./jobbergate-agent.charm \
+    --config ./jobbergate-agent.yaml \
     --series centos7
 ```
 
 ### Release the charm
 
-To make a new release of the cluster-agent charm:
+To make a new release of the jobbergate-agent charm:
 
 1. Update the CHANGELOG.rst file, moving the changes under the Unreleased section to the new version section. Always keep an `Unreleased` section at the top.
 2. Create a new commit with the title `Release x.y.z`
@@ -64,25 +64,25 @@ To make a new release of the cluster-agent charm:
 
 ### Charm Actions
 
-The cluster-agent charm exposes additional functionality to facilitate cluster-agent
+The jobbergate-agent charm exposes additional functionality to facilitate jobbergate-agent
 package upgrades.
 
-To upgrade the cluster-agent to a new version or release:
+To upgrade the jobbergate-agent to a new version or release:
 
 ```bash
-juju run-action cluster-agent/leader upgrade version="7.7.7"
+juju run-action jobbergate-agent/leader upgrade version="7.7.7"
 ```
 
-This will result in the cluster-agent package upgrade to 7.7.7.
+This will result in the jobbergate-agent package upgrade to 7.7.7.
 
 ```bash
-juju run-action cluster-agent/leader upgrade version="7.7.7"
+juju run-action jobbergate-agent/leader upgrade version="7.7.7"
 ```
 
-Manually triggers the cleaning of cluster-agent's cache dir:
+Manually triggers the cleaning of jobbergate-agent's cache dir:
 
 ```bash
-juju run-action cluster-agent/leader clear-cache-dir
+juju run-action jobbergate-agent/leader clear-cache-dir
 ```
 
 #### License

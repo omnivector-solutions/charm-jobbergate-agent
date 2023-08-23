@@ -1,0 +1,14 @@
+[Unit]
+Description=jobbergate-agent
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/srv/jobbergate-agent-venv
+ExecStart=/srv/jobbergate-agent-venv/bin/jg-run
+
+[Install]
+Alias=jobbergate-agent.service
+WantedBy=multi-user.target

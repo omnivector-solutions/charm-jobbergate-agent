@@ -1,11 +1,4 @@
 options:
-  # Used by systemd to specify the frequency of the agent execution
-  stat-interval:
-    type: int
-    default: 60
-    description: |
-      Interval (in seconds) at which the agent process will run.
-
   # Resource URLs
   base-api-url:
     type: string
@@ -66,23 +59,6 @@ options:
     default: LDAP
     description: |
       Type of user-mapper to use. May be LDAP or SINGLE_USER
-  ldap-domain:
-    type: string
-    description: |
-      Domain for the LDAP host used for user identity on the server
-  ldap-username:
-    type: string
-    description: |
-      The username of the user that has directory-wide read permissions (or admin)
-  ldap-password:
-    type: string
-    description: |
-      The password for the user that has directory-wide read permissions (or admin)
-  ldap-auth-type:
-    type: string
-    default: NTLM
-    description: |
-      The type of auth to use for ldap connection. (Should usually be NTLM)
 
   # Other settings
   sentry-dsn:
@@ -95,3 +71,10 @@ options:
     default: slurm
     description: |
       The default username to use for requests to the Slurm REST API
+
+  # Addons
+  agent-add-ons:
+    type: string
+    default:
+    description: |
+      A string used the install extra addons on the agent using pip
