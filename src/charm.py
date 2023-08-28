@@ -103,9 +103,9 @@ class JobbergateAgentCharm(CharmBase):
         `PEP-661 <https://peps.python.org/pep-0661/>_`.
         """
 
-        if self.model.config.get("agent-add-ons"):
+        if self.model.config.get("plugins-install"):
             self.jobbergate_agent_ops._install_jobbergate_addon(
-                self.model.config["agent-add-ons"]
+                self.model.config["plugins-install"]
             )
 
         settings_to_map = {
@@ -147,10 +147,9 @@ class JobbergateAgentCharm(CharmBase):
             value = self.model.config.get(setting, unset)
 
             # If any config value is not yet available, defer
-            if value is unset:
-                if is_required:
-                    event.defer()
-                    return
+            if value is unset and is_required:
+                event.defer()
+                return
             else:
                 env_context[setting] = value
 
@@ -159,7 +158,10 @@ class JobbergateAgentCharm(CharmBase):
                 if store_value != value:
                     setattr(self.stored, mapped_key, value)
 
-        self.jobbergate_agent_ops.configure_env_defaults(env_context)
+        self.jobbergate_agent_ops.configure_env_defaults(
+            config_context=env_context,
+            header=self.model.config.get("plugins-config"),
+        )
         self.stored.config_available = True
 
         logger.info("## Restarting Cluster agent")

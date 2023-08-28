@@ -72,9 +72,27 @@ options:
     description: |
       The default username to use for requests to the Slurm REST API
 
-  # Addons
-  agent-add-ons:
+  # Plugins
+  plugins-install:
     type: string
     default:
-    description: |
-      A string used the install extra addons on the agent using pip
+    description: >
+      A string used the install extra plugins on the agent using pip.
+
+      This will be used after `pip install`, so the version and custom arguments
+      can be provided as well.
+
+      Example usage:
+      $ juju config jobbergate-agent custom-config="agent-plugin==version --index-url 'https://USERPWD@XYZ-DOMAIN.com:443/artifactory/api/pypi/python/simple' --trusted-host=XYZ-DOMAIN.com"
+  plugins-config:
+    type: string
+    default:
+    description: >
+      User supplied configuration for the plugins installed.
+
+      This will be used as headed of the .env file that configures jobbergate-agent.
+      With that, any custom configuration can be provided for the installed plugin.
+
+      Example:
+      JOBBERGATE_AGENT_LDAP_URL=<...>
+      JOBBERGATE_AGENT_LDAP_CREDENTIALS=<...>

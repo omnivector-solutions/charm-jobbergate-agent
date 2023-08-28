@@ -5,7 +5,7 @@ import logging
 import subprocess
 from pathlib import Path
 from shutil import copy2, rmtree
-from typing import Dict, Any
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger()
 
@@ -55,7 +55,7 @@ class JobbergateAgentOps:
 
         return out
 
-    def configure_env_defaults(self, config_context: Dict[str, Any]):
+    def configure_env_defaults(self, config_context: Dict[str, Any], header: Optional[str] = None):
         """
         Map charm configs found in the config_context to app settings.
 
@@ -65,6 +65,8 @@ class JobbergateAgentOps:
         """
         prefix = "JOBBERGATE_AGENT_"
         with open(self._ENV_DEFAULTS, "w") as env_file:
+            if header:
+                print(header, file=env_file)
             for key, value in config_context.items():
                 mapped_key = key.replace("-", "_").upper()
                 print(f"{prefix}{mapped_key}={value}", file=env_file)
