@@ -21,7 +21,7 @@ class JobbergateAgentOps:
     _VENV_DIR = Path("/srv/jobbergate-agent-venv")
     _ENV_DEFAULTS = _VENV_DIR / ".env"
     _PIP_CMD = _VENV_DIR.joinpath("bin", "pip3.8").as_posix()
-    _PYTHON_CMD = Path("/usr/bin/python3.8")
+    _PYTHON_CMD = Path("/opt/python/3.8.16/bin/python3.8")
     _CACHE_DIR = Path("/var/cache/jobbergate-agent")
 
     def __init__(self, charm):
