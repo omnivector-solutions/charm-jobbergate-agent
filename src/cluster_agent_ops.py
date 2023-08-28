@@ -1,5 +1,5 @@
 """
-ClusterAgentOps.
+JobbergateAgentOps.
 """
 import logging
 import subprocess
@@ -10,7 +10,7 @@ from typing import Dict, Any
 logger = logging.getLogger()
 
 
-class ClusterAgentOps:
+class JobbergateAgentOps:
     """Track and perform jobbergate-agent ops."""
 
     _PACKAGE_NAME = "jobbergate-agent"

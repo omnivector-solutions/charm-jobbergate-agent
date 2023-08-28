@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ClusterAgentCharm."""
+"""JobbergateAgentCharm."""
 import logging
 from pathlib import Path
 
@@ -8,7 +8,7 @@ from ops.framework import StoredState
 from ops.main import main
 from ops.model import ActiveStatus, BlockedStatus, WaitingStatus
 
-from jobbergate_agent_ops import ClusterAgentOps
+from jobbergate_agent_ops import JobbergateAgentOps
 
 
 logger = logging.getLogger()
@@ -19,7 +19,7 @@ logger = logging.getLogger()
 unset = object()
 
 
-class ClusterAgentCharm(CharmBase):
+class JobbergateAgentCharm(CharmBase):
     """Facilitate jobbergate-agent lifecycle."""
 
     stored = StoredState()
@@ -32,7 +32,7 @@ class ClusterAgentCharm(CharmBase):
         self.stored.set_default(config_available=False)
         self.stored.set_default(user_created=False)
 
-        self.jobbergate_agent_ops = ClusterAgentOps(self)
+        self.jobbergate_agent_ops = JobbergateAgentOps(self)
 
         event_handler_bindings = {
             self.on.install: self._on_install,
@@ -191,4 +191,4 @@ class ClusterAgentCharm(CharmBase):
 
 
 if __name__ == "__main__":
-    main(ClusterAgentCharm)
+    main(JobbergateAgentCharm)
