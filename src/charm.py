@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ClusterAgentCharm."""
+"""JobbergateAgentCharm."""
 import logging
 from pathlib import Path
 
@@ -8,7 +8,7 @@ from ops.framework import StoredState
 from ops.main import main
 from ops.model import ActiveStatus, BlockedStatus, WaitingStatus
 
-from cluster_agent_ops import ClusterAgentOps
+from jobbergate_agent_ops import JobbergateAgentOps
 
 
 logger = logging.getLogger()
@@ -19,8 +19,8 @@ logger = logging.getLogger()
 unset = object()
 
 
-class ClusterAgentCharm(CharmBase):
-    """Facilitate Cluster-agent lifecycle."""
+class JobbergateAgentCharm(CharmBase):
+    """Facilitate jobbergate-agent lifecycle."""
 
     stored = StoredState()
 
@@ -32,7 +32,7 @@ class ClusterAgentCharm(CharmBase):
         self.stored.set_default(config_available=False)
         self.stored.set_default(user_created=False)
 
-        self.cluster_agent_ops = ClusterAgentOps(self)
+        self.jobbergate_agent_ops = JobbergateAgentOps(self)
 
         event_handler_bindings = {
             self.on.install: self._on_install,
@@ -48,45 +48,45 @@ class ClusterAgentCharm(CharmBase):
             self.framework.observe(event, handler)
 
     def _on_install(self, event):
-        """Install cluster-agent."""
+        """Install jobbergate-agent."""
         self.unit.set_workload_version(Path("version").read_text().strip())
 
         try:
-            self.cluster_agent_ops.install()
+            self.jobbergate_agent_ops.install()
             self.stored.installed = True
         except Exception as e:
             logger.error(f"## Error installing agent: {e}")
             self.stored.installed = False
-            self.unit.status = BlockedStatus("Error installing cluster-agent")
+            self.unit.status = BlockedStatus("Error installing jobbergate-agent")
             event.defer()
             return
         # Log and set status
-        logger.debug("cluster-agent installed")
-        self.unit.status = WaitingStatus("cluster-agent installed")
+        logger.debug("jobbergate-agent installed")
+        self.unit.status = WaitingStatus("jobbergate-agent installed")
 
     def _on_upgrade(self, event):
         """Perform upgrade operations."""
         self.unit.set_workload_version(Path("version").read_text().strip())
 
     def _on_show_version_action(self, event):
-        """Show the info and version of ovs-cluster-agent."""
-        info = self.cluster_agent_ops.get_version_info()
-        event.set_results({"ovs-cluster-agent": info})
+        """Show the info and version of jobbergate-agent."""
+        info = self.jobbergate_agent_ops.get_version_info()
+        event.set_results({"jobbergate-agent": info})
 
     def _on_start(self, event):
         """
-        Start cluster-agent.
+        Start jobbergate-agent.
 
         Check that we have the needed configuration values and whether the
         cluster agent user is created in the slurmctld node, if so
-        start the cluster-agent otherwise defer the event.
+        start the jobbergate-agent otherwise defer the event.
         """
         if not self.stored.config_available:
             event.defer()
             return
 
         logger.info("## Starting Cluster agent")
-        self.cluster_agent_ops.start_agent()
+        self.jobbergate_agent_ops.start_agent()
         self.unit.status = ActiveStatus("cluster agent started")
 
     def _on_config_changed(self, event):
@@ -103,6 +103,11 @@ class ClusterAgentCharm(CharmBase):
         `PEP-661 <https://peps.python.org/pep-0661/>_`.
         """
 
+        if self.model.config.get("plugins-install"):
+            self.jobbergate_agent_ops._install_jobbergate_addon(
+                self.model.config["plugins-install"]
+            )
+
         settings_to_map = {
             "base-api-url": True,
             "base-slurmrestd-url": True,
@@ -116,10 +121,6 @@ class ClusterAgentCharm(CharmBase):
             "oidc-client-id": True,
             "oidc-client-secret": True,
             "slurm-user-mapper": False,
-            "ldap-domain": False,
-            "ldap-username": False,
-            "ldap-password": False,
-            "ldap-auth-type": False,
             "x-slurm-user-name": True,
         }
 
@@ -146,10 +147,9 @@ class ClusterAgentCharm(CharmBase):
             value = self.model.config.get(setting, unset)
 
             # If any config value is not yet available, defer
-            if value is unset:
-                if is_required:
-                    event.defer()
-                    return
+            if value is unset and is_required:
+                event.defer()
+                return
             else:
                 env_context[setting] = value
 
@@ -158,21 +158,24 @@ class ClusterAgentCharm(CharmBase):
                 if store_value != value:
                     setattr(self.stored, mapped_key, value)
 
-        self.cluster_agent_ops.configure_env_defaults(env_context)
+        self.jobbergate_agent_ops.configure_env_defaults(
+            config_context=env_context,
+            header=self.model.config.get("plugins-config"),
+        )
         self.stored.config_available = True
 
         logger.info("## Restarting Cluster agent")
-        self.cluster_agent_ops.restart_agent()
+        self.jobbergate_agent_ops.restart_agent()
         self.unit.status = ActiveStatus("cluster agent restarted")
 
     def _on_remove(self, event):
-        """Remove directories and files created by cluster-agent charm."""
-        self.cluster_agent_ops.remove()
+        """Remove directories and files created by jobbergate-agent charm."""
+        self.jobbergate_agent_ops.remove()
 
     def _on_upgrade_action(self, event):
         version = event.params["version"]
         try:
-            self.cluster_agent_ops.upgrade(version)
+            self.jobbergate_agent_ops.upgrade(version)
             event.set_results({"upgrade": "success"})
             self.unit.status = ActiveStatus(f"Updated to version {version}")
         except Exception:
@@ -181,7 +184,7 @@ class ClusterAgentCharm(CharmBase):
 
     def _on_clear_cache_dir_action(self, event):
         try:
-            result = self.cluster_agent_ops.clear_cache_dir()
+            result = self.jobbergate_agent_ops.clear_cache_dir()
             event.set_results({"cache-clear": "success"})
             self.unit.status = ActiveStatus(result)
         except Exception:
@@ -190,4 +193,4 @@ class ClusterAgentCharm(CharmBase):
 
 
 if __name__ == "__main__":
-    main(ClusterAgentCharm)
+    main(JobbergateAgentCharm)

@@ -1,16 +1,10 @@
 #!/bin/bash
 
-set -e
-
-PYTHON_VERSION="3.8.10"
-
-echo "Downloading and installing Python $PYTHON_VERSION"
-
-mkdir ./tmp/
-wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz -P ./tmp/
-tar xvf ./tmp/Python-${PYTHON_VERSION}.tgz -C ./tmp/
-cd ./tmp/Python-${PYTHON_VERSION}/
-./configure --enable-optimizations --prefix=/usr
+export PYTHON_VERSION=3.8.16
+wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -P /tmp
+tar xvf /tmp/Python-${PYTHON_VERSION}.tar.xz -C /tmp/
+cd /tmp/Python-${PYTHON_VERSION}
+./configure --enable-optimizations --prefix=/opt/python/${PYTHON_VERSION}
 make altinstall
-cd ../../
-rm -rf tmp/
+cd /tmp
+rm -rf ./Python*
