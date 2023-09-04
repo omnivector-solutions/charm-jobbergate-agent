@@ -79,7 +79,7 @@ options:
     description:
       Seconds between the job task runs, to submit pending and check running jobs
   task-garbage-collection-hour:
-    type:
+    type: int
     default:
     description:
       Hour of the day when garbage-collection tasks should be triggered
