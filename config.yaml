@@ -56,9 +56,9 @@ options:
       Secret to protect OIDC client resources
   slurm-user-mapper:
     type: string
-    default: LDAP
+    default:
     description: |
-      Type of user-mapper to use. May be LDAP or SINGLE_USER
+      Type of user-mapper to use.
 
   # Other settings
   sentry-dsn:
@@ -71,6 +71,18 @@ options:
     default: slurm
     description: |
       The default username to use for requests to the Slurm REST API
+
+  # Tasks
+  task-jobs-interval-seconds:
+    type: int
+    default:
+    description:
+      Seconds between the job task runs, to submit pending and check running jobs
+  task-garbage-collection-hour:
+    type:
+    default:
+    description:
+      Hour of the day when garbage-collection tasks should be triggered
 
   # Plugins
   plugins-install:

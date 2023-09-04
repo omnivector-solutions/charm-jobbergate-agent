@@ -122,6 +122,8 @@ class JobbergateAgentCharm(CharmBase):
             "oidc-client-secret": True,
             "slurm-user-mapper": False,
             "x-slurm-user-name": True,
+            "task-jobs-interval-seconds": False,
+            "task-garbage-collection-hour": False,
         }
 
         if not self.model.config.get(
