@@ -148,17 +148,20 @@ class JobbergateAgentCharm(CharmBase):
         for setting, is_required in settings_to_map.items():
             value = self.model.config.get(setting, unset)
 
-            # If any config value is not yet available, defer
-            if value is unset and is_required:
+            if value is unset and not is_required:
+                # Not set, not required, just continue
+                continue
+            elif value is unset and is_required:
+                # Is unset but required, defer
                 event.defer()
                 return
-            else:
-                env_context[setting] = value
 
-                mapped_key = setting.replace("-", "_")
-                store_value = getattr(self.stored, mapped_key, unset)
-                if store_value != value:
-                    setattr(self.stored, mapped_key, value)
+            env_context[setting] = value
+
+            mapped_key = setting.replace("-", "_")
+            store_value = getattr(self.stored, mapped_key, unset)
+            if store_value != value:
+                setattr(self.stored, mapped_key, value)
 
         self.jobbergate_agent_ops.configure_env_defaults(
             config_context=env_context,
