@@ -124,6 +124,7 @@ class JobbergateAgentCharm(CharmBase):
             "x-slurm-user-name": True,
             "task-jobs-interval-seconds": False,
             "task-garbage-collection-hour": False,
+            "write-submission-files": True,
         }
 
         if not self.model.config.get(

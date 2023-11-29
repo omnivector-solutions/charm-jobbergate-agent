@@ -113,7 +113,7 @@ class JobbergateAgentOps:
             "venv",
             self._VENV_DIR.as_posix(),
         ]
-        logger.debug(f"## Creating virtualenv: {create_venv_cmd }")
+        logger.debug(f"## Creating virtualenv: {create_venv_cmd}")
         subprocess.call(create_venv_cmd, env=dict())
         logger.debug("## jobbergate-agent virtualenv created")
 
