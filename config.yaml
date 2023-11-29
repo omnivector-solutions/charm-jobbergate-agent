@@ -71,6 +71,11 @@ options:
     default: slurm
     description: |
       The default username to use for requests to the Slurm REST API
+  write-submission-files:
+    type: boolean
+    default: true
+    description: |
+      Define if the job script files will be written to the submit directory
 
   # Tasks
   task-jobs-interval-seconds:
