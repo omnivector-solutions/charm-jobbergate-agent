@@ -53,6 +53,10 @@ class JobbergateAgentCharm(CharmBase):
 
         try:
             self.jobbergate_agent_ops.install()
+            if self.model.config.get("plugins-install"):
+                self.jobbergate_agent_ops._install_jobbergate_addon(
+                    self.model.config["plugins-install"]
+                )
             self.stored.installed = True
         except Exception as e:
             logger.error(f"## Error installing agent: {e}")
