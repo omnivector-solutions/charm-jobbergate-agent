@@ -20,8 +20,8 @@ class JobbergateAgentOps:
     _SYSTEMD_SERVICE_FILE = _SYSTEMD_BASE_PATH / _SYSTEMD_SERVICE_ALIAS
     _VENV_DIR = Path("/srv/jobbergate-agent-venv")
     _ENV_DEFAULTS = _VENV_DIR / ".env"
-    _PIP_CMD = _VENV_DIR.joinpath("bin", "pip3.8").as_posix()
-    _PYTHON_CMD = Path("/opt/python/3.8.16/bin/python3.8")
+    _PIP_CMD = _VENV_DIR.joinpath("bin", "pip").as_posix()
+    _PYTHON_CMD = Path("/opt/python/python3.12/bin/python3.12")
     _CACHE_DIR = Path("/var/cache/jobbergate-agent")
 
     def __init__(self, charm):
