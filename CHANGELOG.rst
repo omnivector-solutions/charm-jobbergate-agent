@@ -6,6 +6,9 @@ This file keeps track of all notable changes to charm-jobbergate-agent.
 
 Unreleased
 ----------
+
+1.0.2 - 2023-12-11
+------------------ 
 - Added trigger to install jobbergate-agent's addons on charm install
 - Dropped support for CentOS 8
 - Installed Python 3.12 to run the agent
