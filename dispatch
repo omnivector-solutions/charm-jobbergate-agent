@@ -22,20 +22,23 @@ then
 
             # Install yaml deps
             yum -y install libyaml-devel            
+            export CFLAGS="$CFLAGS $(pkg-config --cflags openssl11)"
+            export LDFLAGS="$LDFLAGS $(pkg-config --libs openssl11)"
         fi
 
         if [[ $ID == 'ubuntu' ]]
         then
              # Install dependencies to build custom python
-            apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+            apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev pkg-config
+            export CFLAGS="$CFLAGS $(pkg-config --cflags openssl)"
+            export LDFLAGS="$LDFLAGS $(pkg-config --libs openssl)"
+            export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/include/openssl
         fi
 
         export PYTHON_VERSION=3.12.1
         wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -P /tmp
         tar xvf /tmp/Python-${PYTHON_VERSION}.tar.xz -C /tmp
         cd /tmp/Python-${PYTHON_VERSION}
-        export CFLAGS="$CFLAGS $(pkg-config --cflags openssl11)"
-	export LDFLAGS="$LDFLAGS $(pkg-config --libs openssl11)"
         ./configure --prefix=/opt/python/python3.12 --enable-optimizations
         make -C /tmp/Python-${PYTHON_VERSION} -j $(nproc) altinstall
         cd $OLDPWD
