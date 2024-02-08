@@ -1,6 +1,5 @@
-"""
-JobbergateAgentOps.
-"""
+"""JobbergateAgentOps."""
+
 import logging
 import subprocess
 from pathlib import Path
@@ -56,8 +55,7 @@ class JobbergateAgentOps:
         return out
 
     def configure_env_defaults(self, config_context: Dict[str, Any], header: Optional[str] = None):
-        """
-        Map charm configs found in the config_context to app settings.
+        """Map charm configs found in the config_context to app settings.
 
         Map the settings found in the charm's config.yaml to the expected
         settings for the application (including the prefix). Write all settings to the
@@ -77,9 +75,7 @@ class JobbergateAgentOps:
         self.clear_cache_dir()
 
     def systemctl(self, operation: str):
-        """
-        Run systemctl operation for the service.
-        """
+        """Run systemctl operation for the service."""
         cmd = [
             "systemctl",
             operation,
@@ -91,9 +87,7 @@ class JobbergateAgentOps:
             logger.error(f"Error running {' '.join(cmd)} - {e}")
 
     def remove(self):
-        """
-        Remove the things we have created.
-        """
+        """Remove the things we have created."""
         # Stop and disable the systemd service.
         self.systemctl("stop")
         self.systemctl("disable")
@@ -105,7 +99,6 @@ class JobbergateAgentOps:
 
     def _create_venv_and_ensure_latest_pip(self):
         """Create the virtualenv and upgrade pip."""
-
         # Create the virtualenv
         create_venv_cmd = [
             self._PYTHON_CMD,
@@ -114,7 +107,7 @@ class JobbergateAgentOps:
             self._VENV_DIR.as_posix(),
         ]
         logger.debug(f"## Creating virtualenv: {create_venv_cmd}")
-        subprocess.call(create_venv_cmd, env=dict())
+        subprocess.call(create_venv_cmd, env={})
         logger.debug("## jobbergate-agent virtualenv created")
 
         # Ensure we have the latest pip
@@ -125,7 +118,7 @@ class JobbergateAgentOps:
             "pip",
         ]
         logger.debug(f"## Updating pip: {upgrade_pip_cmd}")
-        subprocess.call(upgrade_pip_cmd, env=dict())
+        subprocess.call(upgrade_pip_cmd, env={})
         logger.debug("## Pip upgraded")
 
     def _setup_systemd(self):
@@ -142,9 +135,9 @@ class JobbergateAgentOps:
         """Install additional dependencies."""
         # Install uvicorn and pyyaml
         cmd = [self._PIP_CMD, "install", "uvicorn", "pyyaml"]
-        logger.debug(f"## Installing exra dependencies: {cmd}")
+        logger.debug(f"## Installing extra dependencies: {cmd}")
         try:
-            subprocess.call(cmd, env=dict())
+            subprocess.call(cmd, env={})
         except subprocess.CalledProcessError as e:
             logger.error(f"Error running {' '.join(cmd)} - {e}")
             raise e
@@ -160,7 +153,7 @@ class JobbergateAgentOps:
         subprocess.call("echo {}".format(cmd).split())
         logger.debug(f"## Installing jobbergate: {cmd}")
         try:
-            subprocess.call(cmd, env=dict())
+            subprocess.call(cmd, env={})
         except subprocess.CalledProcessError as e:
             logger.error(f"Error running {' '.join(cmd)} - {e}")
             raise e
@@ -176,7 +169,7 @@ class JobbergateAgentOps:
         subprocess.call("echo {}".format(cmd).split())
         logger.debug(f"## Installing jobbergate-addons: {cmd}")
         try:
-            subprocess.call(cmd, env=dict())
+            subprocess.call(cmd, env={})
         except subprocess.CalledProcessError as e:
             logger.error(f"Error running {' '.join(cmd)} - {e}")
             raise e
@@ -191,32 +184,29 @@ class JobbergateAgentOps:
         ]
 
         try:
-            subprocess.call(cmd, env=dict())
+            subprocess.call(cmd, env={})
         except subprocess.CalledProcessError as e:
             logger.error(f"Error running {' '.join(cmd)} - {e}")
             raise e
 
     def clear_cache_dir(self) -> str:
         """Clear the cache dir. jobbergate-agent will recreate it on the next run."""
-
         if self._CACHE_DIR.exists():
             logger.debug(f"Clearing cache dir {self._CACHE_DIR.as_posix()}")
             rmtree(self._CACHE_DIR, ignore_errors=True)
             return "Cache cleared"
         else:
-            logger.debug(
-                f"Cache dir {self._CACHE_DIR.as_posix()} doesn't exist. Skipping."
-            )
+            logger.debug(f"Cache dir {self._CACHE_DIR.as_posix()} doesn't exist. Skipping.")
             return "Cache dir doesn't exist. Skipping."
 
     def start_agent(self):
-        """Starts the jobbergate-agent"""
+        """Start the jobbergate-agent."""
         self.systemctl("start")
 
     def stop_agent(self):
-        """Stops the jobbergate-agent"""
+        """Stop the jobbergate-agent."""
         self.systemctl("stop")
 
     def restart_agent(self):
-        """Restars the jobbergate-agent"""
+        """Restart the jobbergate-agent."""
         self.systemctl("restart")
