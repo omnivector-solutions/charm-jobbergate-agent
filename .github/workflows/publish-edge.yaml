@@ -1,0 +1,28 @@
+name: PublishCharmToEdge
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-charms:
+    name: "Build the jobbergate-agent charm"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup operator environment
+        uses: charmed-kubernetes/actions-operator@main
+        with:
+          provider: lxd
+          juju-channel: 3.3/stable
+      - name: "charmcraft pack"
+        run: |
+          charmcraft pack
+      - name: "Upload to charmhub.io edge"
+        env:
+          CHARMCRAFT_AUTH: ${{ secrets.CHARMCRAFT_AUTH }}
+        run: |
+          extension="_ubuntu-22.04-amd64_centos-7-amd64.charm"
+          charmcraft upload --release=edge jobbergate-agent$extension
