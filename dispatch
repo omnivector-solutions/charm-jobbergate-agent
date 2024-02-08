@@ -5,10 +5,13 @@
 
 set -e
 
+
+export SHELL=/bin/bash
+export PYTHON_BIN="/usr/local/bin/python3.12"
+
 # Source the os-release information into the env
 . /etc/os-release
 
-PYTHON_BIN=/opt/python/python3.12/bin/python3.12
 
 if ! [[ -f '.installed' ]]
 then
@@ -32,19 +35,28 @@ then
             apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev pkg-config
             export CFLAGS="$CFLAGS $(pkg-config --cflags openssl)"
             export LDFLAGS="$LDFLAGS $(pkg-config --libs openssl)"
-            export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/include/openssl
+            export LD_LIBRARY_PATH=/usr/lib/ssl
         fi
 
         export PYTHON_VERSION=3.12.1
         wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -P /tmp
         tar xvf /tmp/Python-${PYTHON_VERSION}.tar.xz -C /tmp
         cd /tmp/Python-${PYTHON_VERSION}
-        ./configure --prefix=/opt/python/python3.12 --enable-optimizations
-        make -C /tmp/Python-${PYTHON_VERSION} -j $(nproc) altinstall
+        ./configure --enable-optimizations
+        make -j $(nproc)
+        make install
         cd $OLDPWD
         rm -rf /tmp/Python*
     fi
 	touch .installed
+fi
+
+# set the correct python bin path
+if [[ $ID == "centos" ]]
+then
+	PYTHON_BIN="/usr/bin/env python3.8"
+else
+	PYTHON_BIN="/usr/bin/env python3.10"
 fi
 
 JUJU_DISPATCH_PATH="${JUJU_DISPATCH_PATH:-$0}" PYTHONPATH=lib:venv $PYTHON_BIN ./src/charm.py
