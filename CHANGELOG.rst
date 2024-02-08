@@ -6,6 +6,9 @@ This file keeps track of all notable changes to charm-jobbergate-agent.
 
 Unreleased
 ----------
+- Improved dispatch file to correctly build and install python3.12 on ubuntu.
+- Added github action to make edge releases for the time being.
+- Removed unused Makefile
 
 1.0.2 - 2023-12-11
 ------------------ 
