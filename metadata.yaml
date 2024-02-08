@@ -5,16 +5,11 @@ maintainers:
 description: |
     This charm provides the jobbergate-agent.
 tags:
-    - armada
+    - vantage
     - omnivector
+    - hpc
 
 subordinate: true
-
-series:
-    - centos7
-    - centos8
-    - focal
-    - jammy
 
 requires:
     juju-info:

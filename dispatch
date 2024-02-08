@@ -5,10 +5,13 @@
 
 set -e
 
+
+export SHELL=/bin/bash
+export PYTHON_BIN="/usr/local/bin/python3.12"
+
 # Source the os-release information into the env
 . /etc/os-release
 
-PYTHON_BIN=/opt/python/python3.12/bin/python3.12
 
 if ! [[ -f '.installed' ]]
 then
@@ -18,30 +21,44 @@ then
         then
             # Install dependencies to build custom python
             yum -y install epel-release
-            yum -y install wget gcc make tar bzip2-devel zlib-devel xz-devel openssl-devel libffi-devel sqlite-devel ncurses-devel openssl11-libs openssl11-devel tk-devel libreadline-devel libgdbm-devel
+            yum -y install wget gcc make tar bzip2-devel zlib-devel xz-devel openssl-devel \
+                libffi-devel sqlite-devel ncurses-devel openssl11-libs openssl11-devel \
+                    tk-devel libreadline-devel libgdbm-devel libyaml-devel
 
-            # Install yaml deps
-            yum -y install libyaml-devel            
+            export CFLAGS="$CFLAGS $(pkg-config --cflags openssl11)"
+            export LDFLAGS="$LDFLAGS $(pkg-config --libs openssl11)"
         fi
 
         if [[ $ID == 'ubuntu' ]]
         then
              # Install dependencies to build custom python
-            apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+            apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
+                libreadline-dev libsqlite3-dev wget curl libncursesw5-dev xz-utils tk-dev \
+                    libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev pkg-config
+
+            export CFLAGS="$CFLAGS $(pkg-config --cflags openssl)"
+            export LDFLAGS="$LDFLAGS $(pkg-config --libs openssl)"
+            export LD_LIBRARY_PATH=/usr/lib/ssl
         fi
 
         export PYTHON_VERSION=3.12.1
         wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.xz -P /tmp
         tar xvf /tmp/Python-${PYTHON_VERSION}.tar.xz -C /tmp
         cd /tmp/Python-${PYTHON_VERSION}
-        export CFLAGS="$CFLAGS $(pkg-config --cflags openssl11)"
-	export LDFLAGS="$LDFLAGS $(pkg-config --libs openssl11)"
-        ./configure --prefix=/opt/python/python3.12 --enable-optimizations
-        make -C /tmp/Python-${PYTHON_VERSION} -j $(nproc) altinstall
-        cd $OLDPWD
+        ./configure --enable-optimizations
+        make -j $(nproc)
+        make install
+        cd /tmp
         rm -rf /tmp/Python*
     fi
 	touch .installed
 fi
 
-JUJU_DISPATCH_PATH="${JUJU_DISPATCH_PATH:-$0}" PYTHONPATH=lib:venv $PYTHON_BIN ./src/charm.py
+CHARM_PYTHON_BIN="/usr/bin/env python3.10"
+# set the correct python bin path if centos
+if [[ $ID == 'centos' || $ID == 'rocky' ]]
+then
+    CHARM_PYTHON_BIN="/usr/bin/env python3.8"
+fi
+
+JUJU_DISPATCH_PATH="${JUJU_DISPATCH_PATH:-$0}" PYTHONPATH=lib:venv $CHARM_PYTHON_BIN ./src/charm.py

@@ -3,13 +3,11 @@
 import logging
 from pathlib import Path
 
+from jobbergate_agent_ops import JobbergateAgentOps
 from ops.charm import CharmBase
 from ops.framework import StoredState
 from ops.main import main
 from ops.model import ActiveStatus, BlockedStatus, WaitingStatus
-
-from jobbergate_agent_ops import JobbergateAgentOps
-
 
 logger = logging.getLogger()
 
@@ -78,8 +76,7 @@ class JobbergateAgentCharm(CharmBase):
         event.set_results({"jobbergate-agent": info})
 
     def _on_start(self, event):
-        """
-        Start jobbergate-agent.
+        """Start jobbergate-agent.
 
         Check that we have the needed configuration values and whether the
         cluster agent user is created in the slurmctld node, if so
@@ -94,8 +91,7 @@ class JobbergateAgentCharm(CharmBase):
         self.unit.status = ActiveStatus("cluster agent started")
 
     def _on_config_changed(self, event):
-        """
-        Handle changes to the charm config.
+        """Handle changes to the charm config.
 
         If all the needed settings are available in the charm config, create the
         environment settings for the charmed app. Also, store the config values in the
@@ -106,7 +102,6 @@ class JobbergateAgentCharm(CharmBase):
         falsey or null values. For more information about sentinel values, see
         `PEP-661 <https://peps.python.org/pep-0661/>_`.
         """
-
         if self.model.config.get("plugins-install"):
             self.jobbergate_agent_ops._install_jobbergate_addon(
                 self.model.config["plugins-install"]
@@ -139,16 +134,16 @@ class JobbergateAgentCharm(CharmBase):
             )
             event.defer()
 
-        if self.model.config.get(
-            "slurmrestd-jwt-key-path", None
-        ) and self.model.config.get("slurmrestd-jwt-key-string", None):
+        if self.model.config.get("slurmrestd-jwt-key-path", None) and self.model.config.get(
+            "slurmrestd-jwt-key-string", None
+        ):
             logger.warn(
                 "ALERT! Both slurmrestd-jwt-key-path and slurmrestd-jwt-key-string were configured. "
                 "Prioritizing the slurmrestd-jwt-key-string config."
             )
             self.model.config.update({"slurmrestd-use-key-path": False})
 
-        env_context = dict()
+        env_context = {}
 
         for setting, is_required in settings_to_map.items():
             value = self.model.config.get(setting, unset)
