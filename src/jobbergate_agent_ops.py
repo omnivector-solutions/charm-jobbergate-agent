@@ -218,5 +218,5 @@ class JobbergateAgentOps:
         self.systemctl("stop")
 
     def restart_agent(self):
-        """Restars the jobbergate-agent"""
+        """Restart the jobbergate-agent"""
         self.systemctl("restart")

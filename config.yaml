@@ -5,34 +5,18 @@ options:
     default:
     description: |
       The cluster-api url.
-  base-slurmrestd-url:
-    type: string
-    default: http://127.0.0.1:6820
-    description: |
-      The url for the Slurm REST API.
-  slurm-restd-version:
-    type: string
-    default: v0.0.36
-    description: |
-      The target version for the Slurm REST API.
 
-  # Slurmrestd authentication
-  slurmrestd-jwt-key-path:
+  # Slurm related settings
+  sbatch-path:
     type: string
-    default:
+    default: /usr/bin/sbatch
     description: |
-      Path to the Slurmrestd JWT secret key
-  slurmrestd-jwt-key-string:
+      Absolute path to the sbatch command
+  scontrol-path:
     type: string
-    default:
+    default: /usr/bin/scontrol
     description: |
-      Slurmrestd's JWT secret key itself
-  slurmrestd-use-key-path:
-    type: boolean
-    default: true
-    description: |
-      Whether to use the JWT secret key path or the JWT secret key string
-
+      Absolute path to the scontrol command
   # Auth related settings
   oidc-domain:
     type: string
@@ -81,12 +65,12 @@ options:
   task-jobs-interval-seconds:
     type: int
     default:
-    description:
+    description: |
       Seconds between the job task runs, to submit pending and check running jobs
   task-garbage-collection-hour:
     type: int
     default:
-    description:
+    description: |
       Hour of the day when garbage-collection tasks should be triggered
 
   # Plugins
