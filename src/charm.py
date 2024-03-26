@@ -114,11 +114,8 @@ class JobbergateAgentCharm(CharmBase):
 
         settings_to_map = {
             "base-api-url": True,
-            "base-slurmrestd-url": True,
-            "slurm-restd-version": False,
-            "slurmrestd-jwt-key-path": False,
-            "slurmrestd-jwt-key-string": False,
-            "slurmrestd-use-key-path": True,
+            "sbatch-path": False,
+            "scontrol-path": False,
             "sentry-dsn": False,
             "oidc-domain": True,
             "oidc-audience": True,
@@ -130,23 +127,6 @@ class JobbergateAgentCharm(CharmBase):
             "task-garbage-collection-hour": False,
             "write-submission-files": True,
         }
-
-        if not self.model.config.get(
-            "slurmrestd-jwt-key-path", None
-        ) and not self.model.config.get("slurmrestd-jwt-key-string", None):
-            logger.warn(
-                "Either slurmrestd-jwt-key-path or slurmrestd-jwt-key-string must be configured"
-            )
-            event.defer()
-
-        if self.model.config.get(
-            "slurmrestd-jwt-key-path", None
-        ) and self.model.config.get("slurmrestd-jwt-key-string", None):
-            logger.warn(
-                "ALERT! Both slurmrestd-jwt-key-path and slurmrestd-jwt-key-string were configured. "
-                "Prioritizing the slurmrestd-jwt-key-string config."
-            )
-            self.model.config.update({"slurmrestd-use-key-path": False})
 
         env_context = dict()
 
@@ -188,6 +168,7 @@ class JobbergateAgentCharm(CharmBase):
             self.jobbergate_agent_ops.upgrade(version)
             event.set_results({"upgrade": "success"})
             self.unit.status = ActiveStatus(f"Updated to version {version}")
+            self.jobbergate_agent_ops.restart_agent()
         except Exception:
             self.unit.status = BlockedStatus(f"Error updating to version {version}")
             event.fail()
@@ -197,6 +178,7 @@ class JobbergateAgentCharm(CharmBase):
             result = self.jobbergate_agent_ops.clear_cache_dir()
             event.set_results({"cache-clear": "success"})
             self.unit.status = ActiveStatus(result)
+            self.jobbergate_agent_ops.restart_agent()
         except Exception:
             self.unit.status = BlockedStatus("Error clearing cache")
             event.fail()
