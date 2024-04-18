@@ -7,6 +7,10 @@ This file keeps track of all notable changes to charm-jobbergate-agent.
 Unreleased
 ----------
 
+1.0.3 - 2024-04-18
+------------------
+- Replace slurmrestd by sbatch command
+
 1.0.2 - 2023-12-11
 ------------------ 
 - Added trigger to install jobbergate-agent's addons on charm install
