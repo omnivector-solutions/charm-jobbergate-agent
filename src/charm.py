@@ -189,7 +189,7 @@ class JobbergateAgentCharm(CharmBase):
 
         logger.info("## Restarting Cluster agent")
         self.jobbergate_agent_ops.restart_agent()
-        self.unit.status = ActiveStatus("")
+        self._on_update_status(event)
 
     def _on_remove(self, event):
         """Remove directories and files created by jobbergate-agent charm."""
