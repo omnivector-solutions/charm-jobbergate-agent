@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """JobbergateAgentCharm."""
 import logging
+import subprocess
+
 from pathlib import Path
 
 from jobbergate_agent_ops import JobbergateAgentOps
@@ -33,6 +35,7 @@ class JobbergateAgentCharm(CharmBase):
         self.jobbergate_agent_ops = JobbergateAgentOps(self)
 
         event_handler_bindings = {
+            self.on.update_status: self._on_update_status,
             self.on.install: self._on_install,
             self.on.upgrade_charm: self._on_upgrade,
             self.on.start: self._on_start,
@@ -66,7 +69,22 @@ class JobbergateAgentCharm(CharmBase):
         logger.debug("jobbergate-agent installed")
         self.unit.status = WaitingStatus("jobbergate-agent installed")
 
-    def _on_upgrade(self, event):
+    def _on_update_status(self, event) -> None:
+        """Set the charm status."""
+        try:
+            status = subprocess.check_output(f"systemctl is-active jobbergate-agent", shell=True)
+        except subprocess.CalledProcessError as e:
+            logger.error(e)
+            raise e
+
+        status_str = status.decode().strip()
+        if "active" in status_str:
+            logger.debug("## jobbergate-agent daemon active")
+            self.unit.status = ActiveStatus("")
+        else:
+            self.unit.status = BlockedStatus("Cannot start jobbergate-agent")
+
+    def _on_upgrade(self, event) -> None:
         """Perform upgrade operations."""
         self.unit.set_workload_version(Path("version").read_text().strip())
 
@@ -171,7 +189,7 @@ class JobbergateAgentCharm(CharmBase):
 
         logger.info("## Restarting Cluster agent")
         self.jobbergate_agent_ops.restart_agent()
-        self.unit.status = ActiveStatus("cluster agent restarted")
+        self.unit.status = ActiveStatus("")
 
     def _on_remove(self, event):
         """Remove directories and files created by jobbergate-agent charm."""
